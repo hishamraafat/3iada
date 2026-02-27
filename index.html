@@ -7,18 +7,17 @@
   <link rel="manifest" href="manifest.json">
   <title>عيادة المرابعين</title>
   <style>
-    body { margin: 0; display: flex; align-items: center; 
-           justify-content: center; height: 100vh; 
-           font-family: Arial; background: #1a73e8; }
-    p { color: white; font-size: 18px; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { width: 100vw; height: 100vh; overflow: hidden; }
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
   </style>
 </head>
 <body>
-  <p>جاري التحميل...</p>
-  <script>
-    // بيفتح الـ Apps Script في نفس النافذة
-    window.location.replace("https://script.google.com/macros/s/AKfycbyYh1RZHCVOne3k7tB_ufxAk5UBu7PMV5gW2aYkERhFGkfu17N2J2cdjIVrf9nMk6NY/exec");
-  </script>
+  <iframe src="https://script.google.com/macros/s/AKfycbyYh1RZHCVOne3k7tB_ufxAk5UBu7PMV5gW2aYkERhFGkfu17N2J2cdjIVrf9nMk6NY/exec" allowfullscreen></iframe>
   <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js');
