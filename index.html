@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#1a73e8">
+  <link rel="manifest" href="manifest.json">
+  <title>عيادة المرابعين</title>
+  <style>
+    body { margin: 0; display: flex; align-items: center; 
+           justify-content: center; height: 100vh; 
+           font-family: Arial; background: #1a73e8; }
+    p { color: white; font-size: 18px; }
+  </style>
+</head>
+<body>
+  <p>جاري التحميل...</p>
+  <script>
+    // بيفتح الـ Apps Script في نفس النافذة
+    window.location.replace("https://script.google.com/macros/s/AKfycbyYh1RZHCVOne3k7tB_ufxAk5UBu7PMV5gW2aYkERhFGkfu17N2J2cdjIVrf9nMk6NY/exec");
+  </script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js');
+    }
+  </script>
+</body>
+</html>
