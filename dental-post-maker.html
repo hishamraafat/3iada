@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>صانع بوستات عيادة الأسنان</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;900&family=Tajawal:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F1F6F9;--card:#FFFFFF;--text:#0B2A3F;--muted:#4D6678;--border:#C9D8E2;--primary:#0B3C5D;--on-primary:#FFFFFF;--field:#FFFFFF;--focus:#0E7C86;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0C1A24;--card:#14293A;--text:#EAF3F8;--muted:#A9BFCD;--border:#2D4A5F;--primary:#5FE0D0;--on-primary:#0B3C5D;--field:#0F2130;--focus:#5FE0D0}}
+:root[data-theme="dark"]{--bg:#0C1A24;--card:#14293A;--text:#EAF3F8;--muted:#A9BFCD;--border:#2D4A5F;--primary:#5FE0D0;--on-primary:#0B3C5D;--field:#0F2130;--focus:#5FE0D0}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--text);font-family:'Tajawal','Cairo',sans-serif;font-size:17px;line-height:1.5}
+.wrap{max-width:1000px;margin:0 auto;padding:16px;display:grid;gap:16px}
+@media (min-width:860px){.wrap{grid-template-columns:minmax(0,460px) minmax(0,1fr);align-items:start}.preview{position:sticky;top:16px}}
+h1{font-family:'Cairo',sans-serif;font-weight:900;font-size:26px;margin:0 0 4px}
+.sub{margin:0;color:var(--muted)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;display:grid;gap:14px}
+.preview canvas{width:100%;height:auto;display:block;border-radius:12px;border:1px solid var(--border);background:#0B3C5D}
+label,.lbl{display:grid;gap:6px;font-weight:700;font-size:16px}
+input[type=text],textarea,select{width:100%;min-height:46px;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--field);color:var(--text);font:inherit}
+textarea{min-height:84px;resize:vertical}
+input:focus-visible,textarea:focus-visible,button:focus-visible,select:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+input[type=range]{width:100%;min-height:36px;accent-color:var(--primary)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+button{min-height:46px;padding:10px 14px;border-radius:12px;border:1px solid var(--border);background:var(--field);color:var(--text);font:inherit;font-weight:700;cursor:pointer}
+button[aria-pressed="true"]{background:var(--primary);color:var(--on-primary);border-color:var(--primary)}
+.file{display:flex;align-items:center;justify-content:center;gap:8px;min-height:50px;border:2px dashed var(--border);border-radius:12px;cursor:pointer;font-weight:700;padding:8px;text-align:center}
+.file:focus-within{outline:3px solid var(--focus);outline-offset:2px}
+.file input{position:absolute;opacity:0;width:1px;height:1px}
+.sw{display:flex;gap:10px}
+.sw button{width:46px;padding:0;border-radius:50%;border:3px solid var(--border)}
+.sw button[aria-pressed="true"]{border-color:var(--text);background:inherit}
+.dl{background:var(--primary);color:var(--on-primary);border-color:var(--primary);font-family:'Cairo',sans-serif;font-weight:900;font-size:20px;min-height:54px}
+.msg{min-height:24px;color:var(--muted);margin:0;font-size:15px}
+.sec{font-family:'Cairo',sans-serif;font-weight:900;font-size:18px;margin:0}
+</style>
+</head>
+<body>
+<main class="wrap">
+<section class="preview card" aria-label="معاينة البوست">
+<canvas id="cv" role="img" aria-label="معاينة بوست الحالة"></canvas>
+<button class="dl" id="dl" type="button">حفظ البوست كصورة PNG</button>
+<p class="msg" id="msg" role="status"></p>
+</section>
+
+<section class="card" aria-label="بيانات البوست">
+<div>
+<h1>صانع بوستات العيادة</h1>
+<p class="sub">ارفع الصورة واكتب البيانات والمعاينة بتتحدث لوحدها.</p>
+</div>
+
+<p class="sec">الصور</p>
+<div class="row" id="mode">
+<button type="button" data-m="single" aria-pressed="true">صورة واحدة</button>
+<button type="button" data-m="ba" aria-pressed="false">قبل وبعد</button>
+</div>
+<label class="file"><span id="photoLbl">ارفع صورة الحالة</span><input type="file" id="photo" accept="image/*"></label>
+<label class="file" id="fB" hidden><span id="photoBLbl">ارفع صورة بعد</span><input type="file" id="photoB" accept="image/*"></label>
+<label class="file"><span id="logoLbl">ارفع اللوجو (بيحل مكان أيقونة السن)</span><input type="file" id="logo" accept="image/*"></label>
+
+<p class="sec">الكتابة</p>
+<label>عنوان الحالة<input type="text" id="title" value="حشو تجميلي"></label>
+<label>تفاصيل الحالة<textarea id="desc">ترميم السن بحشوة تجميلية بلون يطابق لون السن الطبيعي.</textarea></label>
+<label>رقم الحجز<input type="text" id="phone" value="" placeholder="مثال: 01000000000" inputmode="tel"></label>
+<div class="row">
+<label>اسم العيادة<input type="text" id="clinic" value="عيادة الأسنان"></label>
+<label>اسم الوحدة<input type="text" id="unit" value="وحدة المرابعين الصحية"></label>
+</div>
+
+<p class="sec">ضبط الصورة</p>
+<div class="row" id="sel" hidden>
+<button type="button" data-s="a" aria-pressed="true">ضبط صورة قبل</button>
+<button type="button" data-s="b" aria-pressed="false">ضبط صورة بعد</button>
+</div>
+<label>تكبير الصورة<input type="range" id="zoom" min="100" max="300" value="100"></label>
+<div class="row">
+<label>يمين / شمال<input type="range" id="ox" min="-100" max="100" value="0"></label>
+<label>فوق / تحت<input type="range" id="oy" min="-100" max="100" value="0"></label>
+</div>
+
+<p class="sec">اللوجو</p>
+<label>حجم اللوجو<input type="range" id="lsize" min="70" max="130" value="104"></label>
+<button type="button" id="back" aria-pressed="true">خلفية بيضاء دائرية خلف اللوجو</button>
+
+<p class="sec">المقاس واللون</p>
+<div class="row" id="fmt">
+<button type="button" data-h="1080" aria-pressed="true">مربع 1080×1080</button>
+<button type="button" data-h="1350" aria-pressed="false">طولي 1080×1350</button>
+</div>
+<div class="sw" id="sw" role="group" aria-label="لون التمييز">
+<button type="button" data-c="#5FE0D0" style="background:#5FE0D0" aria-label="تركواز" aria-pressed="true"></button>
+<button type="button" data-c="#FFD166" style="background:#FFD166" aria-label="أصفر" aria-pressed="false"></button>
+<button type="button" data-c="#FF9BB0" style="background:#FF9BB0" aria-label="وردي" aria-pressed="false"></button>
+<button type="button" data-c="#FFFFFF" style="background:#FFFFFF" aria-label="أبيض" aria-pressed="false"></button>
+</div>
+</section>
+</main>
+
+<script>
+(function(){
+var cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+var S={h:1080,accent:'#5FE0D0',back:true,mode:'single',sel:'a',t:{a:{z:100,x:0,y:0},b:{z:100,x:0,y:0}},photo:null,photoB:null,logo:null};
+var W=1080,NAVY='#0B3C5D';
+function $(id){return document.getElementById(id)}
+var TOOTH='M100 20 C70 5 20 15 20 70 C20 110 45 125 50 170 C54 205 62 225 78 225 C96 225 92 170 100 170 C108 170 104 225 122 225 C138 225 146 205 150 170 C155 125 180 110 180 70 C180 15 130 5 100 20 Z';
+
+function wrap(text,maxW,maxLines,font){
+ctx.font=font;var out=[];
+String(text||'').split('\n').forEach(function(p){
+var words=p.trim().split(/\s+/).filter(Boolean),cur='';
+if(!words.length){return}
+words.forEach(function(w){
+var t=cur?cur+' '+w:w;
+if(ctx.measureText(t).width>maxW&&cur){out.push(cur);cur=w}else{cur=t}
+});
+if(cur)out.push(cur);
+});
+if(out.length>maxLines){out=out.slice(0,maxLines);var l=out[maxLines-1];
+while(l.length>1&&ctx.measureText(l+'…').width>maxW){l=l.slice(0,-1)}
+out[maxLines-1]=l+'…'}
+return out;
+}
+function rr(x,y,w,h,r){ctx.beginPath();ctx.roundRect(x,y,w,h,r)}
+
+function draw(){
+var H=S.h;cv.width=W;cv.height=H;
+ctx.direction='rtl';ctx.textAlign='right';
+ctx.fillStyle=NAVY;ctx.fillRect(0,0,W,H);
+ctx.fillStyle='#11507A';ctx.beginPath();ctx.arc(40,40,330,0,Math.PI*2);ctx.fill();
+
+// header
+ctx.fillStyle='#FFFFFF';ctx.font='900 60px Cairo, Tajawal, sans-serif';
+ctx.fillText($('clinic').value,W-48,104);
+ctx.fillStyle=S.accent;ctx.font='700 28px Cairo, Tajawal, sans-serif';
+ctx.fillText($('unit').value,W-48,148);
+var L=+$('lsize').value;
+ctx.save();
+if(S.logo){
+var lw0=S.logo.naturalWidth,lh0=S.logo.naturalHeight;
+if(S.back){
+ctx.fillStyle='#FFFFFF';ctx.beginPath();ctx.arc(48+L/2,100,L/2,0,Math.PI*2);ctx.fill();
+var r0=Math.min(L*0.78/lw0,L*0.78/lh0);
+ctx.drawImage(S.logo,48+L/2-lw0*r0/2,100-lh0*r0/2,lw0*r0,lh0*r0);
+}else{
+var r1=Math.min(L*1.8/lw0,L/lh0);
+ctx.drawImage(S.logo,48,100-lh0*r1/2,lw0*r1,lh0*r1);
+}
+}else{
+var k=L/104;ctx.translate(48+L/2,100);
+ctx.fillStyle='#E8FBF8';ctx.beginPath();ctx.arc(0,0,L/2,0,Math.PI*2);ctx.fill();
+ctx.translate(-26*k,-31*k);ctx.scale(0.26*k,0.26*k);
+var p=new Path2D(TOOTH);ctx.fillStyle='#FFFFFF';ctx.fill(p);ctx.lineWidth=10;ctx.strokeStyle=NAVY;ctx.lineJoin='round';ctx.stroke(p);
+}
+ctx.restore();
+ctx.direction='rtl';ctx.textAlign='right';
+
+// text blocks
+var tF='900 54px Cairo, Tajawal, sans-serif',dF='500 30px Tajawal, Cairo, sans-serif';
+var tl=wrap($('title').value,984,2,tF),dl=wrap($('desc').value,984,3,dF);
+var capH=tl.length*66+(dl.length?10+dl.length*46:0);
+var barH=84,barY=H-48-barH,photoY=190;
+var capY=barY-28-(capH?capH+28:0);
+var photoH=Math.max(200,capY-photoY);
+if(!capH)photoH=Math.max(200,barY-28-photoY);
+var px=48,pw=984;
+
+// photos
+var ba=S.mode==='ba',gap=14;
+var slots=ba?[{k:'a',x:px+(pw+gap)/2,w:(pw-gap)/2,t:'قبل',im:S.photo},{k:'b',x:px,w:(pw-gap)/2,t:'بعد',im:S.photoB}]:[{k:'a',x:px,w:pw,t:'',im:S.photo}];
+slots.forEach(function(sl){
+ctx.save();rr(sl.x,photoY,sl.w,photoH,28);ctx.clip();
+ctx.fillStyle='#E8FBF8';ctx.fillRect(sl.x,photoY,sl.w,photoH);
+if(sl.im){
+var tt=S.t[sl.k],iw=sl.im.naturalWidth,ih=sl.im.naturalHeight;
+var sc=Math.max(sl.w/iw,photoH/ih)*(tt.z/100);
+var dw=iw*sc,dh=ih*sc,mx=(dw-sl.w)/2,my=(dh-photoH)/2;
+ctx.drawImage(sl.im,sl.x+(sl.w-dw)/2+(tt.x/100)*mx,photoY+(photoH-dh)/2+(tt.y/100)*my,dw,dh);
+}else{
+ctx.fillStyle=NAVY;ctx.textAlign='center';
+ctx.font='900 '+(ba?32:40)+'px Cairo, Tajawal, sans-serif';
+ctx.fillText(ba?'صورة '+sl.t:'مكان صورة الحالة',sl.x+sl.w/2,photoY+photoH/2);
+ctx.textAlign='right';
+}
+ctx.restore();
+ctx.lineWidth=6;ctx.strokeStyle='#FFFFFF';rr(sl.x+3,photoY+3,sl.w-6,photoH-6,25);ctx.stroke();
+if(ba){
+ctx.font='900 30px Cairo, Tajawal, sans-serif';
+var bw=ctx.measureText(sl.t).width+44;
+ctx.fillStyle=S.accent;rr(sl.x+sl.w-24-bw,photoY+24,bw,52,26);ctx.fill();
+ctx.fillStyle=NAVY;ctx.textAlign='center';ctx.fillText(sl.t,sl.x+sl.w-24-bw/2,photoY+60);ctx.textAlign='right';
+}
+});
+
+// caption
+ctx.textAlign='right';ctx.direction='rtl';
+var yy=capY+(capH?28:0);
+ctx.fillStyle=S.accent;ctx.font=tF;
+tl.forEach(function(t,i){ctx.fillText(t,W-48,yy+48+i*66)});
+ctx.fillStyle='#D7E6F0';ctx.font=dF;
+dl.forEach(function(t,i){ctx.fillText(t,W-48,yy+tl.length*66+10+34+i*46)});
+
+// booking bar
+ctx.fillStyle=S.accent;rr(48,barY,984,barH,18);ctx.fill();
+ctx.fillStyle=NAVY;ctx.font='900 34px Cairo, Tajawal, sans-serif';
+ctx.fillText('مع خالص تمنياتنا بالشفاء العاجل',W-48-32,barY+57);
+var ph2=$('phone').value.trim();
+if(ph2){ctx.direction='ltr';ctx.textAlign='left';ctx.fillText(ph2,48+32,barY+57)}
+}
+function ph(h){return h}
+
+function schedule(){requestAnimationFrame(draw)}
+function loadImg(file,key,lbl){
+if(!file)return;
+var im=new Image();
+im.onload=function(){S[key]=im;$(lbl).textContent='تم الرفع: '+file.name;draw()};
+im.onerror=function(){$('msg').textContent='تعذر قراءة الصورة، جرّب صورة تانية.'};
+im.src=URL.createObjectURL(file);
+}
+$('photo').addEventListener('change',function(e){loadImg(e.target.files[0],'photo','photoLbl')});
+$('photoB').addEventListener('change',function(e){loadImg(e.target.files[0],'photoB','photoBLbl')});
+$('logo').addEventListener('change',function(e){loadImg(e.target.files[0],'logo','logoLbl')});
+['title','desc','phone','clinic','unit','lsize'].forEach(function(id){$(id).addEventListener('input',schedule)});
+['zoom','ox','oy'].forEach(function(id){$(id).addEventListener('input',function(){var t=S.t[S.sel];t.z=+$('zoom').value;t.x=+$('ox').value;t.y=+$('oy').value;schedule()})});
+function syncSel(){var t=S.t[S.sel];$('zoom').value=t.z;$('ox').value=t.x;$('oy').value=t.y;
+$('sel').querySelectorAll('button').forEach(function(b){b.setAttribute('aria-pressed',b.getAttribute('data-s')===S.sel?'true':'false')})}
+
+function group(id,attr,fn){
+var box=$(id);
+box.addEventListener('click',function(e){
+var b=e.target.closest('button');if(!b)return;
+box.querySelectorAll('button').forEach(function(x){x.setAttribute('aria-pressed',x===b?'true':'false')});
+fn(b.getAttribute(attr));schedule();
+});
+}
+group('mode','data-m',function(v){
+S.mode=v;var ba=v==='ba';
+$('fB').hidden=!ba;$('sel').hidden=!ba;
+if(!S.photo)$('photoLbl').textContent=ba?'ارفع صورة قبل':'ارفع صورة الحالة';
+S.sel='a';syncSel();
+});
+group('sel','data-s',function(v){S.sel=v;syncSel()});
+group('fmt','data-h',function(v){S.h=+v});
+group('sw','data-c',function(v){S.accent=v});
+$('back').addEventListener('click',function(){
+S.back=!S.back;this.setAttribute('aria-pressed',S.back?'true':'false');schedule();
+});
+
+$('dl').addEventListener('click',async function(){
+var msg=$('msg');msg.textContent='';
+try{
+var d=await window.claude.use('downloads');
+if(!d){msg.textContent='الحفظ مش متاح هنا. افتح الصفحة من تطبيق أو موقع Claude.';return}
+draw();
+var blob=await new Promise(function(res){cv.toBlob(res,'image/png')});
+if(!blob){msg.textContent='حصلت مشكلة في تجهيز الصورة، جرّب تاني.';return}
+await d.save({filename:'dental-case-post.png',data:blob});
+msg.textContent='تم تجهيز الصورة للحفظ.';
+}catch(err){
+msg.textContent=(err&&err.code==='declined')?'تم إلغاء الحفظ.':'تعذر الحفظ، جرّب تاني.';
+}
+});
+
+draw();
+if(document.fonts){
+Promise.all(['900 60px Cairo','700 28px Cairo','500 30px Tajawal'].map(function(f){return document.fonts.load(f,'عيادة الأسنان')})).then(draw,draw);
+document.fonts.ready.then(draw);
+}
+})();
+</script>
+</body>
+</html>
