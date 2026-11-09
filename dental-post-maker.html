@@ -251,19 +251,29 @@ $('back').addEventListener('click',function(){
 S.back=!S.back;this.setAttribute('aria-pressed',S.back?'true':'false');schedule();
 });
 
-$('dl').addEventListener('click',async function(){
-var msg=$('msg');msg.textContent='';
-try{
-var d=await window.claude.use('downloads');
-if(!d){msg.textContent='الحفظ مش متاح هنا. افتح الصفحة من تطبيق أو موقع Claude.';return}
-draw();
-var blob=await new Promise(function(res){cv.toBlob(res,'image/png')});
-if(!blob){msg.textContent='حصلت مشكلة في تجهيز الصورة، جرّب تاني.';return}
-await d.save({filename:'dental-case-post.png',data:blob});
-msg.textContent='تم تجهيز الصورة للحفظ.';
-}catch(err){
-msg.textContent=(err&&err.code==='declined')?'تم إلغاء الحفظ.':'تعذر الحفظ، جرّب تاني.';
-}
+$('dl').addEventListener('click', function(){
+    var msg = $('msg');
+    msg.textContent = '';
+    try {
+        draw();
+        cv.toBlob(function(blob) {
+            if (!blob) {
+                msg.textContent = 'حصلت مشكلة في تجهيز الصورة، جرّب تاني.';
+                return;
+            }
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = 'dental-case-post.png';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            msg.textContent = 'تم حفظ الصورة بنجاح!';
+        }, 'image/png');
+    } catch (err) {
+        msg.textContent = 'تعذر الحفظ، جرّب تاني.';
+    }
 });
 
 draw();
